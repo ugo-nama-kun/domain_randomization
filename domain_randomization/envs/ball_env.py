@@ -4,6 +4,7 @@ import os
 import random
 import tempfile
 import xml.etree.ElementTree as ET
+from typing import Optional
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -42,7 +43,7 @@ class BallEnv(MujocoEnv, utils.EzPickle):
                  vision=False,
                  width=64,
                  height=64,
-                 render_mode="human",
+                 render_mode=None,
                  *args, **kwargs):
         self.render_mode = render_mode
         self.height = height
@@ -53,7 +54,7 @@ class BallEnv(MujocoEnv, utils.EzPickle):
         self.kwargs = kwargs
         
         self.frame_skip = 10
-        obs_shape = 6 + 10 + 10 + 2
+        obs_shape = 6
         self.observation_space = Box(low=-np.inf, high=np.inf, shape=(obs_shape,), dtype=np.float64)
         
         self.texture_path = os.path.dirname(__file__) + "/models/texture/random_gen.png"
@@ -73,15 +74,15 @@ class BallEnv(MujocoEnv, utils.EzPickle):
     def get_current_obs(self):
         gyro = self.data.sensor("gyro").data
         accel = self.data.sensor("accel").data
-        return np.concatenate([gyro, accel])
+        return np.concatenate([gyro, accel], dtype=np.float32)
     
     def set_random_position(self):
         L = 5
-        self.init_qpos[:2] = self.np_random.uniform(-L, L, size=2)
+        self.init_qpos[1] = self.np_random.uniform(-L, L)
 
-        random_angle = self.np_random.uniform(0, 2 * np.pi)
-        q = eulertoq(np.array([0, 0, random_angle]))
-        self.init_qpos[3:3 + 4] = q
+        # random_angle = self.np_random.uniform(0, 2 * np.pi)
+        # q = eulertoq(np.array([0, 0, random_angle]))
+        # self.init_qpos[3:3 + 4] = q
 
     def reset_model(self):
         self.rebuild_model()
@@ -124,7 +125,8 @@ class BallEnv(MujocoEnv, utils.EzPickle):
         sphere_elem.set('rgba', agent_color)  # Replace '1 0 0 1' with the desired RGBA value
         
         # Random sizing the agent body
-        sphere_elem.set("size", f"{random.uniform(0.3, 0.5)}")
+        agent_size = random.uniform(0.3, 0.5)
+        sphere_elem.set("size", f"{agent_size}")
         
         # Random perturbation of imu position
         imu_elem = root.find(".//site[@name='imu']")
@@ -139,15 +141,14 @@ class BallEnv(MujocoEnv, utils.EzPickle):
             )
         )
         
-        for i in range(random.randint(0, 5)):
-            scale = 0.3
+        for i in range(random.randint(3, 5)):
             x, y, z = self.generate_random_point_in_sphere()
             ET.SubElement(
                 new_body, "geom", dict(
                     name=f"weight{i}",
                     type="sphere",
                     size=f"{0.1 * random.random() + 0.02}",
-                    pos=f"{scale*x} {scale*y} {scale*z}",
+                    pos=f"{agent_size * x} {agent_size * y} {agent_size * z}",
                     rgba=f"{random.random()} {random.random()} {random.random()} 1",
                 )
             )

@@ -14,17 +14,17 @@
         <texture type="skybox" builtin="gradient" width="100" height="100" rgb1="1 1 1" rgb2="0 0 0"/>
         <texture name="texgeom" type="cube" builtin="flat" mark="cross" width="127" height="1278" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01"/>
         <texture name="texplane" type="2d" builtin="checker" rgb1="1 1 1" rgb2="1 1 1" width="100" height="100"/>
-        <material name='MatPlane' texture="texplane" shininess="1" texrepeat="1 1" specular="1" reflectance="0.0"/>
+        <material name='MatPlane' texture="texplane" shininess="1" texrepeat="10 1" specular="1" reflectance="0.0"/>
         <material name='geom' texture="texgeom" texuniform="true"/>
     </asset>
     <worldbody>
         <light name="light" directional="true" cutoff="100" exponent="1" diffuse="1 1 1" specular=".1 .1 .1" pos="0 0 1.3" dir="-0 0 -0.3"/>
-        <geom name='floor' material="MatPlane" pos='0 0 0' size='10 10 10' type='plane' conaffinity='1' rgba='0.8 0.9 0.8 1' condim='3'/>
+        <geom name='floor' material="MatPlane" pos='0 0 0' size='100 10 10' type='plane' conaffinity='1' rgba='0.8 0.9 0.8 1' condim='3'/>
         <body name="torso" pos="0 0 0.5" euler='0 0 0'>
             <joint name="root" type="free"/>
             <body name="agent_body">
+                <camera name="track" mode="trackcom" pos="0 -4 0.3" xyaxes="1 0 0 0 0 1"/>
                 <site name="camera_pos" rgba="1 0 0 1" pos="0 0 0.6" size="0.05"/>
-                <camera euler="90 -90 0" fovy="120" name="rgb" pos="0 0 0.6"/>
                 <geom type="sphere" size="0.3" rgba="0 1 0 1" mass="0.3"/>
                 <site name="imu" pos="0 0 0"/>
             </body>
