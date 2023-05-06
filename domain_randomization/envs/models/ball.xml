@@ -1,0 +1,41 @@
+<!-- most of the code is based on: differentialdrive.xml in  https://pab47.github.io/mujocopy.html -->
+<mujoco model="wheel">
+    <compiler inertiafromgeom="true" angle="degree" coordinate="local"/>
+    <option timestep="0.01" integrator="RK4"/>
+    <option gravity="0 0 -9.81"/>
+    <visual>
+        <global offwidth="480" offheight="480"/>
+        <headlight active="0"/>
+    </visual>
+    <default>
+        <geom condim="3" conaffinity="0" margin="0.01" friction="1 0.5 0.5" solref=".02 1" solimp=".8 .8 .01" rgba="0.8 0.6 0.4 1" density="5.0" />
+    </default>
+    <asset>
+        <texture type="skybox" builtin="gradient" width="100" height="100" rgb1="1 1 1" rgb2="0 0 0"/>
+        <texture name="texgeom" type="cube" builtin="flat" mark="cross" width="127" height="1278" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01"/>
+        <texture name="texplane" type="2d" builtin="checker" rgb1="1 1 1" rgb2="1 1 1" width="100" height="100"/>
+        <material name='MatPlane' texture="texplane" shininess="1" texrepeat="1 1" specular="1" reflectance="0.0"/>
+        <material name='geom' texture="texgeom" texuniform="true"/>
+    </asset>
+    <worldbody>
+        <light name="light" directional="true" cutoff="100" exponent="1" diffuse="1 1 1" specular=".1 .1 .1" pos="0 0 1.3" dir="-0 0 -0.3"/>
+        <geom name='floor' material="MatPlane" pos='0 0 0' size='10 10 10' type='plane' conaffinity='1' rgba='0.8 0.9 0.8 1' condim='3'/>
+        <body name="torso" pos="0 0 0.5" euler='0 0 0'>
+            <joint name="root" type="free"/>
+            <body name="agent_body">
+                <site name="camera_pos" rgba="1 0 0 1" pos="0 0 0.6" size="0.05"/>
+                <camera euler="90 -90 0" fovy="120" name="rgb" pos="0 0 0.6"/>
+                <geom type="sphere" size="0.3" rgba="0 1 0 1" mass="0.3"/>
+                <site name="imu" pos="0 0 0"/>
+            </body>
+        </body>
+    </worldbody>
+    <actuator>
+        <velocity name="motor0" joint="root" ctrllimited="true" ctrlrange="-1 1" gear="1 0 0 0 0 0"/>
+        <velocity name="motor1" joint="root" ctrllimited="true" ctrlrange="-1 1" gear="0 1 0 0 0 0"/>
+    </actuator>
+    <sensor>
+        <gyro          name="gyro" site="imu" noise="0.01" cutoff="34.9"/>
+        <accelerometer name="accel" site="imu" noise="0.01" cutoff="157"/>
+    </sensor>
+</mujoco>
