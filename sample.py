@@ -10,4 +10,4 @@ while True:
         print(obs, info)
         obs, reward, terminal, truncated, info = env.step(env.action_space.sample())
         done = terminal | truncated
-        # env.render()
+        env.render()
