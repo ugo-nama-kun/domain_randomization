@@ -1,4 +1,4 @@
-# Example of Domain Randomization in Mujoco Environment p Gymnasium.
+# Example of Domain Randomization in Mujoco Environment + Gymnasium.
 A simple domain randomization using gymnasium + mujoco. The environment is a simple ball agent but random weights are attache on the body.
 
 The domain randomization includes
